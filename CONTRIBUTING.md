@@ -1,5 +1,3 @@
-# CONTRIBUTING.md
-
 # Campus ERP System - Contribution Guidelines
 
 This project follows a modular Laravel architecture with clean separation of concerns to support scalability, maintainability, and collaborative development.
