@@ -86,21 +86,34 @@ Route::delete(
     [StaffController::class, 'destroy']
 )->middleware('auth');
 
-/*
-|--------------------------------------------------------------------------
-| Staff Attendance Routes
-|--------------------------------------------------------------------------
-*/
+
+
+ /*                                                                         
+| -------------------------------------------------------------------------- 
+| Staff Attendance Routes                                                    
+| -------------------------------------------------------------------------- 
+ */                                                                         
 
 Route::get(
-    '/staff/attendance',
-    [AttendanceController::class, 'index']
+'/staff/attendance',
+[AttendanceController::class, 'index']
 )->middleware('auth');
 
 Route::post(
-    '/staff/attendance',
-    [AttendanceController::class, 'store']
+'/staff/attendance',
+[AttendanceController::class, 'store']
 )->middleware('auth');
+
+Route::put(
+'/staff/attendance/{attendance}',
+[AttendanceController::class, 'update']
+)->middleware('auth');
+
+Route::delete(
+'/staff/attendance/{attendance}',
+[AttendanceController::class, 'destroy']
+)->middleware('auth');
+
 
 /*
 |--------------------------------------------------------------------------
