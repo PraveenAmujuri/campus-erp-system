@@ -12,11 +12,32 @@ class StudentAttendanceController extends Controller
     /**
      * Display attendance dashboard.
      */
-    public function index()
+    public function index(Request $request)
     {
         $students = Student::latest()->get();
 
+        $search = $request->search;
+
         $attendanceRecords = StudentAttendance::with('student')
+            ->when($search, function ($query) use ($search) {
+
+                $query->whereHas(
+                    'student',
+                    function ($studentQuery) use ($search) {
+
+                        $studentQuery->where(
+                            'name',
+                            'like',
+                            "%{$search}%"
+                        )
+                        ->orWhere(
+                            'admission_number',
+                            'like',
+                            "%{$search}%"
+                        );
+                    }
+                );
+            })
             ->latest()
             ->get();
 
@@ -76,7 +97,8 @@ class StudentAttendanceController extends Controller
                 'absentToday',
                 'holidayToday',
                 'attendancePercentage',
-                'monthlyReport'
+                'monthlyReport',
+                'search'
             )
         );
     }
@@ -137,5 +159,45 @@ class StudentAttendanceController extends Controller
             'Attendance marked successfully.'
         );
     }
+
+    /**
+     * Delete attendance record.
+     */
+    public function destroy(
+        StudentAttendance $attendance
+    )
+    {
+        $attendance->delete();
+
+        return back()->with(
+            'success',
+            'Attendance record deleted successfully.'
+        );
+    }
+    /**
+ * Update attendance record.
+ */
+public function update(
+    Request $request,
+    StudentAttendance $attendance
+)
+{
+    $request->validate([
+
+        'status' => [
+            'required',
+            'in:PRESENT,ABSENT,HOLIDAY'
+        ]
+    ]);
+
+    $attendance->update([
+
+        'status' => $request->status
+    ]);
+
+    return back()->with(
+        'success',
+        'Attendance updated successfully.'
+    );
 }
-?>
+}

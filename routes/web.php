@@ -89,6 +89,16 @@ Route::post(
     [StudentAttendanceController::class, 'store']
 )->middleware('auth');
 
+Route::delete(
+    '/students/attendance/{attendance}',
+    [StudentAttendanceController::class, 'destroy']
+)->middleware('auth');
+
+Route::put(
+    '/students/attendance/{attendance}',
+    [StudentAttendanceController::class, 'update']
+)->middleware('auth');
+
 /*
 |--------------------------------------------------------------------------
 | Authentication Routes
