@@ -207,7 +207,7 @@ Student Attendance Dashboard
                 type="text"
                 name="search"
                 value="{{ request('search') }}"
-                placeholder="Search Student..."
+                placeholder="Search Name, Admission No, Course, Status..."
                 class="border p-2 rounded"
             >
 
@@ -268,9 +268,9 @@ Student Attendance Dashboard
                     {{ $record->date }}
                 </td>
 
-                <td class="border p-2">
+                <td class="border p-2 text-center">
 
-                    @if($record->status === 'PRESENT')
+    @if($record->status === 'PRESENT')
 
                         <span class="bg-green-500 text-white px-3 py-1 rounded">
                             PRESENT
@@ -292,9 +292,9 @@ Student Attendance Dashboard
 
                 </td>
 
-<td class="border p-2">
+<td class="border p-2 text-center">
 
-    <div class="flex items-center justify-center gap-2">
+    <div class="flex justify-center items-center gap-2">
 
         <form
             method="POST"
@@ -307,7 +307,7 @@ Student Attendance Dashboard
             <select
                 name="status"
                 onchange="this.form.submit()"
-                class="border border-gray-300 rounded px-2 py-1 text-sm"
+                class="border border-gray-300 rounded h-8 text-sm bg-white"
             >
                 <option
                     value="PRESENT"
@@ -345,7 +345,7 @@ Student Attendance Dashboard
 
             <button
                 type="submit"
-                class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm"
+                class="bg-red-600 hover:bg-red-700 text-white h-8 px-4 rounded text-sm flex items-center justify-center"
             >
                 Delete
             </button>

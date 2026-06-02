@@ -40,8 +40,9 @@
     {{-- Add Student Form --}}
     <div class="bg-white p-6 rounded shadow mb-8">
 
-        <form method="POST"
-              action="/students">
+        <form id="studentForm"
+      method="POST"
+      action="/students">
 
             @csrf
 
@@ -54,8 +55,9 @@
 
                 </label>
 
-                <input type="text"
-                       name="admission_number"
+                <input id="admission_number"
+       type="text"
+       name="admission_number"
                        value="{{ old('admission_number') }}"
                        class="w-full border p-2 rounded"
                        required>
@@ -71,8 +73,9 @@
 
                 </label>
 
-                <input type="text"
-                       name="name"
+                <input id="name"
+       type="text"
+       name="name"
                        value="{{ old('name') }}"
                        class="w-full border p-2 rounded"
                        required>
@@ -88,7 +91,8 @@
 
                 </label>
 
-                <select name="stream"
+                <select id="stream"
+        name="stream"
                         class="w-full border p-2 rounded"
                         required>
 
@@ -115,8 +119,9 @@
 
                 </label>
 
-                <input type="text"
-                       name="course"
+                <input id="course"
+       type="text"
+       name="course"
                        class="w-full border p-2 rounded"
                        required>
 
@@ -131,8 +136,9 @@
 
                 </label>
 
-                <input type="number"
-                       name="semester"
+                <input id="semester"
+       type="number"
+       name="semester"
                        min="1"
                        max="6"
                        class="w-full border p-2 rounded"
@@ -149,7 +155,8 @@
 
                 </label>
 
-                <select name="category"
+                <select id="category"
+        name="category"
                         class="w-full border p-2 rounded"
                         required>
 
@@ -171,8 +178,9 @@
 
                 </label>
 
-                <input type="email"
-                       name="email"
+                <input id="email"
+       type="email"
+       name="email"
                        class="w-full border p-2 rounded">
 
             </div>
@@ -186,18 +194,21 @@
 
                 </label>
 
-                <input type="text"
-                       name="phone"
+                <input id="phone"
+       type="text"
+       name="phone"
                        class="w-full border p-2 rounded">
 
             </div>
 
             <button type="submit"
-                    class="bg-blue-600 text-white px-5 py-2 rounded">
+        class="bg-blue-600 text-white px-5 py-2 rounded">
 
-                Add Student
+    <span id="submitText">
+        Add Student
+    </span>
 
-            </button>
+</button>
 
         </form>
 
@@ -206,11 +217,36 @@
     {{-- Student List --}}
     <div class="bg-white p-6 rounded shadow">
 
-        <h2 class="text-2xl font-bold mb-4">
+<div class="flex justify-between items-center mb-4">
 
-            Student List
+    <h2 class="text-2xl font-bold">
 
-        </h2>
+        Student List
+
+    </h2>
+
+    <form method="GET"
+          action="/students"
+          class="flex gap-2">
+
+        <input
+            type="text"
+            name="search"
+            value="{{ request('search') }}"
+            placeholder="Search Student..."
+            class="border p-2 rounded"
+        >
+
+        <button
+            type="submit"
+            class="bg-blue-600 text-white px-4 py-2 rounded"
+        >
+            Search
+        </button>
+
+    </form>
+
+</div>
 
         <table class="w-full border-collapse">
 
@@ -218,11 +254,12 @@
 
                 <tr class="bg-gray-200">
 
-                    <th class="border p-2">Admission No</th>
-                    <th class="border p-2">Name</th>
-                    <th class="border p-2">Course</th>
-                    <th class="border p-2">Semester</th>
-                    <th class="border p-2">Category</th>
+                    <th class="border p-2 text-center">Admission No</th>
+<th class="border p-2 text-center">Name</th>
+<th class="border p-2 text-center">Course</th>
+<th class="border p-2 text-center">Semester</th>
+<th class="border p-2 text-center">Category</th>
+<th class="border p-2 text-center">Actions</th>
 
                 </tr>
 
@@ -260,9 +297,44 @@
 
                         <td class="border p-2">
 
-                            {{ $student->category }}
+    {{ $student->category }}
 
-                        </td>
+</td>
+
+<td class="border p-2">
+
+    <div class="flex justify-center gap-2">
+
+        <button
+            type="button"
+            onclick='fillEditForm(@json($student))'
+            class="bg-yellow-500 text-white w-20 py-1 rounded">
+
+            Edit
+
+        </button>
+
+        <form
+            action="/students/{{ $student->id }}"
+            method="POST"
+            onsubmit="return confirm('Delete student?')">
+
+            @csrf
+            @method('DELETE')
+
+            <button
+                type="submit"
+                class="bg-red-600 text-white w-20 py-1 rounded">
+
+                Delete
+
+            </button>
+
+        </form>
+
+    </div>
+
+</td>
 
                     </tr>
 
@@ -270,8 +342,7 @@
 
                     <tr>
 
-                        <td colspan="5"
-                            class="border p-4 text-center">
+                        <td colspan="7" class="text-center p-4">
 
                             No students found.
 
@@ -288,7 +359,66 @@
     </div>
 
 </div>
+<script>
 
+function fillEditForm(student)
+{
+    document.getElementById('admission_number').value =
+        student.admission_number;
+
+    document.getElementById('name').value =
+        student.name;
+
+    document.getElementById('stream').value =
+        student.stream;
+
+    document.getElementById('course').value =
+        student.course;
+
+    document.getElementById('semester').value =
+        student.semester;
+
+    document.getElementById('category').value =
+        student.category;
+
+    document.getElementById('email').value =
+        student.email ?? '';
+
+    document.getElementById('phone').value =
+        student.phone ?? '';
+
+    let form =
+        document.getElementById('studentForm');
+
+    form.action =
+        '/students/' + student.id;
+
+    let existingMethod =
+        document.getElementById('methodField');
+
+    if (!existingMethod) {
+
+        let method =
+            document.createElement('input');
+
+        method.type = 'hidden';
+        method.name = '_method';
+        method.value = 'PUT';
+        method.id = 'methodField';
+
+        form.appendChild(method);
+    }
+
+    document.getElementById('submitText').innerText =
+        'Update Student';
+
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+</script>
 </body>
 
 </html>

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Student;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreStudentRequest extends FormRequest
 {
@@ -15,41 +16,37 @@ class StoreStudentRequest extends FormRequest
     }
 
     /**
-     * Validation rules for student creation.
+     * Validation rules.
      */
     public function rules(): array
     {
         return [
 
-            // Admission number must be unique
             'admission_number' => [
                 'required',
                 'string',
                 'max:50',
-                'unique:students,admission_number'
+                Rule::unique('students', 'admission_number')
+                    ->ignore($this->student)
             ],
 
-            // Student name
             'name' => [
                 'required',
                 'string',
                 'max:255'
             ],
 
-            // Stream
             'stream' => [
                 'required',
                 'in:Science,Arts'
             ],
 
-            // Course
             'course' => [
                 'required',
                 'string',
                 'max:100'
             ],
 
-            // Semester
             'semester' => [
                 'required',
                 'integer',
@@ -57,19 +54,16 @@ class StoreStudentRequest extends FormRequest
                 'max:6'
             ],
 
-            // Reservation category
             'category' => [
                 'required',
                 'in:GEN,OBC,SC,ST'
             ],
 
-            // Optional email
             'email' => [
                 'nullable',
                 'email'
             ],
 
-            // Optional phone
             'phone' => [
                 'nullable',
                 'string',

@@ -21,22 +21,18 @@ class StudentAttendanceController extends Controller
         $attendanceRecords = StudentAttendance::with('student')
             ->when($search, function ($query) use ($search) {
 
-                $query->whereHas(
-                    'student',
-                    function ($studentQuery) use ($search) {
+                $query->where(function ($mainQuery) use ($search) {
 
-                        $studentQuery->where(
-                            'name',
-                            'like',
-                            "%{$search}%"
-                        )
-                        ->orWhere(
-                            'admission_number',
-                            'like',
-                            "%{$search}%"
-                        );
-                    }
-                );
+    $mainQuery->whereHas('student', function ($studentQuery) use ($search) {
+
+        $studentQuery->where('name', 'like', "%{$search}%")
+                     ->orWhere('admission_number', 'like', "%{$search}%")
+                     ->orWhere('course', 'like', "%{$search}%");
+
+    })
+    ->orWhere('status', 'like', "%{$search}%");
+
+});
             })
             ->latest()
             ->get();
