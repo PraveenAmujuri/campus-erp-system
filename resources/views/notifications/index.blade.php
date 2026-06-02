@@ -75,10 +75,12 @@
     {{-- Notification Form --}}
     <div class="bg-white p-6 rounded shadow mb-8">
 
-        <form method="POST"
-              action="/notifications">
+        <form id="notificationForm"
+      method="POST"
+      action="/notifications">
 
-            @csrf
+    @csrf
+
 
             <div class="mb-4">
 
@@ -88,8 +90,9 @@
 
                 </label>
 
-                <input type="text"
-                       name="recipient"
+                <input id="recipient"
+       type="text"
+       name="recipient"
                        value="{{ old('recipient') }}"
                        class="w-full border p-2 rounded"
                        required>
@@ -104,7 +107,8 @@
 
                 </label>
 
-                <select name="type"
+                <select id="type"
+        name="type"
                         class="w-full border p-2 rounded"
                         required>
 
@@ -153,7 +157,7 @@
 
                 </label>
 
-                <textarea id="messageBox"
+                <textarea id="message"
                           name="message"
                           rows="5"
                           class="w-full border p-3 rounded"
@@ -164,7 +168,9 @@
             <button type="submit"
                     class="bg-blue-600 text-white px-5 py-2 rounded">
 
-                Send Notification
+                <span id="submitText">
+    Send Notification
+</span>
 
             </button>
 
@@ -270,10 +276,23 @@
                             {{ $notification->created_at }}
                         </td>
 
-                        <td class="border p-2">
+                        
 
-                            <form method="POST"
-                                  action="/notifications/{{ $notification->id }}">
+                            <td class="border p-2">
+
+    <div class="flex justify-center gap-2">
+
+        <button
+            type="button"
+            onclick='fillEditForm(@json($notification))'
+            class="bg-yellow-500 text-white w-20 py-1 rounded">
+
+            Edit
+
+        </button>
+
+        <form method="POST"
+              action="/notifications/{{ $notification->id }}">
 
                                 @csrf
                                 @method('DELETE')
@@ -281,14 +300,14 @@
                                 <button
                                     type="submit"
                                     onclick="return confirm('Delete notification?')"
-                                    class="bg-red-500 text-white px-3 py-1 rounded">
+                                    class="bg-red-600 text-white w-20 py-1 rounded">
 
                                     Delete
 
                                 </button>
 
                             </form>
-
+</div>
                         </td>
 
                     </tr>
@@ -322,7 +341,7 @@
         document.getElementById('templateSelect');
 
     const messageBox =
-        document.getElementById('messageBox');
+        document.getElementById('message')
 
     templateSelect.addEventListener(
         'change',
@@ -334,7 +353,51 @@
     );
 
 </script>
+<script>
 
+function fillEditForm(notification)
+{
+    document.getElementById('recipient').value =
+        notification.recipient;
+
+    document.getElementById('type').value =
+        notification.type;
+
+    document.getElementById('message').value =
+        notification.message;
+
+    let form =
+        document.getElementById('notificationForm');
+
+    form.action =
+        '/notifications/' + notification.id;
+
+    let existingMethod =
+        document.getElementById('methodField');
+
+    if (!existingMethod) {
+
+        let method =
+            document.createElement('input');
+
+        method.type = 'hidden';
+        method.name = '_method';
+        method.value = 'PUT';
+        method.id = 'methodField';
+
+        form.appendChild(method);
+    }
+
+    document.getElementById('submitText').innerText =
+        'Update Notification';
+
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+</script>
 </body>
 
 </html>

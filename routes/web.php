@@ -159,6 +159,11 @@ Route::post(
     [NotificationController::class, 'store']
 )->middleware('auth');
 
+Route::put(
+    '/notifications/{notification}',
+    [NotificationController::class, 'update']
+)->middleware('auth');
+
 Route::delete(
     '/notifications/{notification}',
     [NotificationController::class, 'destroy']

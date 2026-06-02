@@ -73,6 +73,26 @@ class NotificationController extends Controller
         );
     }
 
+    public function update(
+    StoreNotificationRequest $request,
+    Notification $notification
+)
+{
+    $notification->update([
+
+        'recipient' => $request->recipient,
+
+        'type' => $request->type,
+
+        'message' => $request->message
+    ]);
+
+    return back()->with(
+        'success',
+        'Notification updated successfully.'
+    );
+}
+
     /**
      * Delete Notification
      */
