@@ -14,7 +14,47 @@ class StudentAttendanceController extends Controller
      */
     public function index(Request $request)
     {
-        $students = Student::latest()->get();
+        $course = $request->course;
+$year = $request->year;
+$section = $request->section;
+
+$students = Student::query();
+
+if ($course) {
+    $students->where('course', $course);
+}
+
+if ($year) {
+
+    switch ($year) {
+
+        case 1:
+            $students->whereIn('semester', [1,2]);
+            break;
+
+        case 2:
+            $students->whereIn('semester', [3,4]);
+            break;
+
+        case 3:
+            $students->whereIn('semester', [5,6]);
+            break;
+
+        case 4:
+            $students->whereIn('semester', [7,8]);
+            break;
+    }
+}
+
+if ($section) {
+    $students->where('section', $section);
+}
+
+$students = $students->get();
+
+$courses = Student::select('course')
+    ->distinct()
+    ->pluck('course');
 
         $search = $request->search;
 
@@ -83,21 +123,24 @@ class StudentAttendanceController extends Controller
             'attendance'
         )->get();
 
-        return view(
-            'students.attendance',
-            compact(
-                'students',
-                'attendanceRecords',
-                'totalStudents',
-                'presentToday',
-                'absentToday',
-                'holidayToday',
-                'attendancePercentage',
-                'monthlyReport',
-                'search'
-            )
-        );
-    }
+return view(
+    'students.attendance',
+    compact(
+        'students',
+        'courses',
+        'course',
+        'year',
+        'section',
+        'attendanceRecords',
+        'totalStudents',
+        'presentToday',
+        'absentToday',
+        'holidayToday',
+        'attendancePercentage',
+        'monthlyReport',
+        'search'
+    )
+);  }
 
     /**
      * Store attendance record.
@@ -191,9 +234,44 @@ public function update(
         'status' => $request->status
     ]);
 
+    return redirect()->to(
+
+    '/students/attendance?' .
+
+    http_build_query([
+
+        'course' => $request->course,
+
+        'year' => $request->year,
+
+        'section' => $request->section
+    ])
+
+)->with(
+
+    'success',
+    'Attendance marked successfully.'
+
+);
+}
+public function bulkStore(Request $request)
+{
+    foreach ($request->attendance as $studentId => $status) {
+
+        StudentAttendance::updateOrCreate(
+    [
+        'student_id' => $studentId,
+        'date' => date('Y-m-d')
+    ],
+    [
+        'status' => $status
+    ]
+);
+    }
+
     return back()->with(
         'success',
-        'Attendance updated successfully.'
+        'Class attendance saved successfully.'
     );
 }
 }

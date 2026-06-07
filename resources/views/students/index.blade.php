@@ -29,6 +29,24 @@
     {{-- Success Message --}}
     @if(session('success'))
 
+    @if ($errors->any())
+
+    <div class="bg-red-500 text-white p-3 rounded mb-5">
+
+        <ul>
+
+            @foreach ($errors->all() as $error)
+
+                <li>{{ $error }}</li>
+
+            @endforeach
+
+        </ul>
+
+    </div>
+
+@endif
+
         <div class="bg-green-500 text-white p-3 rounded mb-5">
 
             {{ session('success') }}
@@ -146,6 +164,29 @@
 
             </div>
 
+            {{-- Section --}}
+<div class="mb-4">
+
+    <label class="block mb-2 font-semibold">
+
+        Section
+
+    </label>
+
+    <select id="section"
+            name="section"
+            class="w-full border p-2 rounded"
+            required>
+
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+
+    </select>
+
+</div>
+
             {{-- Category --}}
             <div class="mb-4">
 
@@ -258,6 +299,7 @@
 <th class="border p-2 text-center">Name</th>
 <th class="border p-2 text-center">Course</th>
 <th class="border p-2 text-center">Semester</th>
+<th class="border p-2 text-center">Section</th>
 <th class="border p-2 text-center">Category</th>
 <th class="border p-2 text-center">Actions</th>
 
@@ -291,11 +333,17 @@
 
                         <td class="border p-2">
 
-                            {{ $student->semester }}
+    {{ $student->semester }}
 
-                        </td>
+</td>
 
-                        <td class="border p-2">
+<td class="border p-2">
+
+    {{ $student->section }}
+
+</td>
+
+<td class="border p-2">
 
     {{ $student->category }}
 
@@ -376,10 +424,13 @@ function fillEditForm(student)
         student.course;
 
     document.getElementById('semester').value =
-        student.semester;
+    student.semester;
 
-    document.getElementById('category').value =
-        student.category;
+document.getElementById('section').value =
+    student.section;
+
+document.getElementById('category').value =
+    student.category;
 
     document.getElementById('email').value =
         student.email ?? '';

@@ -61,10 +61,13 @@ public function index()
                 $request->course,
 
             'semester' =>
-                $request->semester,
+    $request->semester,
 
-            'category' =>
-                $request->category,
+'section' =>
+    $request->section,
+
+'category' =>
+    $request->category,
 
             'email' =>
                 $request->email,
@@ -98,10 +101,13 @@ public function index()
             $request->course,
 
         'semester' =>
-            $request->semester,
+    $request->semester,
 
-        'category' =>
-            $request->category,
+'section' =>
+    $request->section,
+
+'category' =>
+    $request->category,
 
         'email' =>
             $request->email,

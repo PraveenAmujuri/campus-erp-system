@@ -20,6 +20,8 @@ class Student extends Model
         'course',
 
         'semester',
+        
+        'section',
 
         'category',
 

@@ -109,6 +109,14 @@ Route::put(
     [StudentAttendanceController::class, 'update']
 )->middleware('auth');
 
+Route::post(
+    '/students/attendance/bulk',
+    [
+        StudentAttendanceController::class,
+        'bulkStore'
+    ]
+);
+
 /*
 |--------------------------------------------------------------------------
 | Authentication Routes

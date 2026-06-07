@@ -48,13 +48,18 @@ class StoreStudentRequest extends FormRequest
             ],
 
             'semester' => [
-                'required',
-                'integer',
-                'min:1',
-                'max:6'
-            ],
+    'required',
+    'integer',
+    'min:1',
+    'max:6'
+],
 
-            'category' => [
+'section' => [
+    'required',
+    'in:A,B,C,D'
+],
+
+'category' => [
                 'required',
                 'in:GEN,OBC,SC,ST'
             ],
