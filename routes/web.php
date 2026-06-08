@@ -1,10 +1,19 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
+
+use App\Http\Controllers\Notification\NotificationController;
+
 use App\Http\Controllers\Student\StudentController;
 use App\Http\Controllers\Student\StudentAttendanceController;
 
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\Staff\AttendanceController;
+
+use App\Models\Notification;
+use App\Models\NotificationTemplate;
+
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -57,18 +66,84 @@ Route::middleware('auth')->group(function () {
     )->name('profile.destroy');
 });
 
+
 /*
 |--------------------------------------------------------------------------
-<<<<<<< HEAD
+| Notification Dashboard Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/notifications', function () {
+
+    $type = request('type');
+    $search = request('search');
+
+    $notifications = Notification::query();
+
+    if ($search) {
+
+        $notifications->where(function ($query) use ($search) {
+
+            $query->where('recipient', 'like', "%{$search}%")
+                  ->orWhere('message', 'like', "%{$search}%");
+
+        });
+    }
+
+    if ($type && $type !== 'ALL') {
+
+        $notifications->where('type', $type);
+    }
+
+    $notifications = $notifications->latest()->get();
+
+    $templates = NotificationTemplate::all();
+
+    $totalNotifications = Notification::count();
+    $emailCount = Notification::where('type', 'EMAIL')->count();
+    $smsCount = Notification::where('type', 'SMS')->count();
+    $whatsappCount = Notification::where('type', 'WHATSAPP')->count();
+    $failedCount = Notification::where('status', 'FAILED')->count();
+
+    return view(
+        'notifications.index',
+        compact(
+            'notifications',
+            'templates',
+            'type',
+            'search',
+            'totalNotifications',
+            'emailCount',
+            'smsCount',
+            'whatsappCount',
+            'failedCount'
+        )
+    );
+
+})->middleware('auth');
+
+Route::post(
+    '/notifications',
+    [NotificationController::class, 'store']
+)->middleware('auth');
+
+Route::put(
+    '/notifications/{notification}',
+    [NotificationController::class, 'update']
+)->middleware('auth');
+
+Route::delete(
+    '/notifications/{notification}',
+    [NotificationController::class, 'destroy']
+)->middleware('auth');
+
+/*
+|--------------------------------------------------------------------------
 | Student Management Routes
-=======
-| Staff Management Routes
->>>>>>> staff-management-module
 |--------------------------------------------------------------------------
 */
 
 Route::get(
-<<<<<<< HEAD
     '/students',
     [StudentController::class, 'index']
 )->middleware('auth');
@@ -121,7 +196,14 @@ Route::post(
         'bulkStore'
     ]
 );
-=======
+
+/*
+|--------------------------------------------------------------------------
+| Staff Management Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
     '/staff',
     [StaffController::class, 'index']
 )->middleware('auth');
@@ -146,35 +228,67 @@ Route::delete(
     [StaffController::class, 'destroy']
 )->middleware('auth');
 
-
-
- /*                                                                         
-| -------------------------------------------------------------------------- 
-| Staff Attendance Routes                                                    
-| -------------------------------------------------------------------------- 
- */                                                                         
+/*
+|--------------------------------------------------------------------------
+| Staff Attendance Routes
+|--------------------------------------------------------------------------
+*/
 
 Route::get(
-'/staff/attendance',
-[AttendanceController::class, 'index']
+    '/staff/attendance',
+    [AttendanceController::class, 'index']
 )->middleware('auth');
 
 Route::post(
-'/staff/attendance',
-[AttendanceController::class, 'store']
+    '/staff/attendance',
+    [AttendanceController::class, 'store']
 )->middleware('auth');
 
 Route::put(
-'/staff/attendance/{attendance}',
-[AttendanceController::class, 'update']
+    '/staff/attendance/{attendance}',
+    [AttendanceController::class, 'update']
 )->middleware('auth');
 
 Route::delete(
-'/staff/attendance/{attendance}',
-[AttendanceController::class, 'destroy']
+    '/staff/attendance/{attendance}',
+    [AttendanceController::class, 'destroy']
 )->middleware('auth');
 
->>>>>>> staff-management-module
+/*
+|--------------------------------------------------------------------------
+| TEMPORARY TESTING ROUTES
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/test-email', function () {
+
+    Mail::raw(
+        'This is a test email from Campus ERP Notification Module.',
+        function ($message) {
+
+            $message->to('suryahero2004@gmail.com')
+                    ->subject('Campus ERP Test Email');
+
+        }
+    );
+
+    return 'Test email sent successfully.';
+});
+
+Route::get('/send-test-notification', function () {
+
+    app(
+        \App\Services\Notification\NotificationService::class
+    )->sendEmail([
+
+        'recipient' => 'suryahero2004@gmail.com',
+        'title' => 'ERP Service Test',
+        'message' => 'NotificationService is working properly.'
+
+    ]);
+
+    return 'Notification sent successfully.';
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -182,8 +296,4 @@ Route::delete(
 |--------------------------------------------------------------------------
 */
 
-<<<<<<< HEAD
 require __DIR__.'/auth.php';
-=======
-require __DIR__.'/auth.php';
->>>>>>> staff-management-module
