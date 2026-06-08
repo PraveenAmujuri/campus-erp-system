@@ -98,7 +98,7 @@ Student Attendance Dashboard
 
     <h3 class="font-bold">Attendance %</h3>
 
-    <p class="text-3xl font-bold">
+    <p class="text-4xl font-bold mt-2">
         {{ $attendancePercentage }}%
     </p>
 
@@ -109,114 +109,100 @@ Student Attendance Dashboard
 
 <div class="bg-white p-6 rounded-lg shadow-md mt-8">
 
+<form method="GET" action="/students/attendance">
 
-<form method="GET"
-      action="/students/attendance">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
 
-    
+        <!-- Academic Year -->
+        <div>
+            <label class="block mb-2 font-semibold">
+                Academic Year
+            </label>
 
+            <select name="year" class="w-full border p-2 rounded">
+                <option value="" {{ empty($year) ? 'selected' : '' }}>
+                    Select Year
+                </option>
 
+                <option value="1" {{ $year == 1 ? 'selected' : '' }}>1st Year</option>
+                <option value="2" {{ $year == 2 ? 'selected' : '' }}>2nd Year</option>
+                <option value="3" {{ $year == 3 ? 'selected' : '' }}>3rd Year</option>
+                <option value="4" {{ $year == 4 ? 'selected' : '' }}>4th Year</option>
+            </select>
+        </div>
 
-        <div class="mb-4">
+        <!-- Course -->
+        <div>
+            <label class="block mb-2 font-semibold">
+                Course
+            </label>
 
-    <label class="block mb-2 font-semibold">
-        Academic Year
-    </label>
+            <select name="course" class="w-full border p-2 rounded">
 
-    <select
-name="year"
-class="w-full border p-2 rounded">
+                <option value="">
+                    Select Course
+                </option>
 
-    <option value="" {{ empty($year) ? 'selected' : '' }}>
-        Select Year
-    </option>
+                @foreach($courses as $courseItem)
+                    <option
+                        value="{{ $courseItem }}"
+                        {{ $course == $courseItem ? 'selected' : '' }}
+                    >
+                        {{ $courseItem }}
+                    </option>
+                @endforeach
 
-    <option value="1" {{ $year == 1 ? 'selected' : '' }}>
-        1st Year
-    </option>
+            </select>
+        </div>
 
-    <option value="2" {{ $year == 2 ? 'selected' : '' }}>
-        2nd Year
-    </option>
+        <!-- Section -->
+        <div>
+            <label class="block mb-2 font-semibold">
+                Section
+            </label>
 
-    <option value="3" {{ $year == 3 ? 'selected' : '' }}>
-        3rd Year
-    </option>
+            <select name="section" class="w-full border p-2 rounded">
 
-    <option value="4" {{ $year == 4 ? 'selected' : '' }}>
-        4th Year
-    </option>
+                <option value="" {{ empty($section) ? 'selected' : '' }}>
+                    Select Section
+                </option>
 
-</select>
+                <option value="A" {{ $section == 'A' ? 'selected' : '' }}>A</option>
+                <option value="B" {{ $section == 'B' ? 'selected' : '' }}>B</option>
+                <option value="C" {{ $section == 'C' ? 'selected' : '' }}>C</option>
+                <option value="D" {{ $section == 'D' ? 'selected' : '' }}>D</option>
 
-</div>
-    <label class="block mb-2 font-semibold">
-        Select Course
-    </label>
+            </select>
+        </div>
 
-    <select
-    name="course"
-    class="w-full border p-2 rounded">
-
-        <option value="">
-            -- Select Course --
-        </option>
-
-        @foreach($courses as $courseItem)
-
-            <option
-                value="{{ $courseItem }}"
-                {{ $course == $courseItem ? 'selected' : '' }}
+        <!-- Load Button -->
+        <div>
+            <button
+                type="submit"
+                class="w-full bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded"
             >
-                {{ $courseItem }}
-            </option>
+                Load Students
+            </button>
+        </div>
 
-        @endforeach
-
-    </select>
-
-</div>
-
-<div class="mb-4">
-
-    <label class="block mb-2 font-semibold">
-        Section
-    </label>
-
-    <select
-    name="section"
-    class="w-full border p-2 rounded">
-
-        <option value="" {{ empty($section) ? 'selected' : '' }}>
-    Select Section
-</option>
-
-        <option value="A" {{ $section == 'A' ? 'selected' : '' }}>A</option>
-<option value="B" {{ $section == 'B' ? 'selected' : '' }}>B</option>
-<option value="C" {{ $section == 'C' ? 'selected' : '' }}>C</option>
-<option value="D" {{ $section == 'D' ? 'selected' : '' }}>D</option>
-    </select>
-
-</div>
-
-        <button type="submit"
-        class="bg-green-600 text-white px-5 py-2 rounded mb-4">
-
-    Load Students
-
-</button>
-
+    </div>
 @if(count($students) > 0)
 
-<div class="overflow-x-auto mt-4">
+<div class="mt-8">
+    <h2 class="text-xl font-bold mb-4">
+        Student Attendance Records
+    </h2>
 
-<table class="w-full border-collapse border min-w-[900px]">
+    <div class="overflow-x-auto mt-4">
 
-    <thead>
+<table class="w-full border-collapse border shadow-sm rounded-lg overflow-hidden min-w-[900px]">
+
+    <thead class="sticky top-0 bg-gray-200 z-10">
 
         <tr class="bg-gray-200">
 
-            <th class="border p-2">Admission No</th>
+            <th class="border p-2">#</th>
+<th class="border p-2">Admission No</th>
             <th class="border p-2">Student Name</th>
             <th class="border p-2">Semester</th>
             <th class="border p-2">Section</th>
@@ -228,12 +214,16 @@ class="w-full border p-2 rounded">
 
     <tbody>
 
-        @foreach($students as $student)
+        @foreach($students as $index => $student)
 
         <tr>
 
-            <td class="border p-2">
-                {{ $student->admission_number }}
+    <td class="border p-2 text-center">
+        {{ $index + 1 }}
+    </td>
+
+    <td class="border p-2">
+        {{ $student->admission_number }}
             </td>
 
             <td class="border p-2">
@@ -283,14 +273,19 @@ class="w-full border p-2 rounded">
 </table>
 </div>
 @csrf
+<div class="flex justify-center mt-6">
+
 <button
     type="submit"
     formaction="/students/attendance/bulk"
     formmethod="POST"
-    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded mt-4 font-semibold"
+    onclick="return confirm('Are you sure you want to save attendance for all students?')"
+    class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded font-semibold"
 >
     Save Attendance
 </button>
+</div>
+</div>
 
 @endif
 
@@ -337,9 +332,11 @@ class="w-full border p-2 rounded">
 <div class="overflow-x-auto">
 <table class="w-full border-collapse min-w-[1000px]">
 
-    <thead>
+    <thead class="sticky top-0 bg-gray-200 z-10">
 
         <tr class="bg-gray-200">
+
+            <th class="border p-2">#</th>
 
             <th class="border p-2">Admission No</th>
 
@@ -359,13 +356,17 @@ class="w-full border p-2 rounded">
 
     <tbody>
 
-        @forelse($attendanceRecords as $record)
+        @forelse($attendanceRecords as $index => $record)
 
             <tr>
 
-                <td class="border p-2">
-                    {{ $record->student->admission_number }}
-                </td>
+    <td class="border p-2 text-center">
+        {{ $index + 1 }}
+    </td>
+
+    <td class="border p-2">
+        {{ $record->student->admission_number }}
+    </td>
 
                 <td class="border p-2">
                     {{ $record->student->name }}
@@ -479,7 +480,7 @@ class="w-full border p-2 rounded">
 
             <tr>
 
-                <td colspan="6"
+                <td colspan="7"
                     class="border p-4 text-center">
 
                     No attendance records found.
@@ -508,11 +509,12 @@ class="w-full border p-2 rounded">
 
 <div class="overflow-x-auto mt-4">
 <table class="w-full border-collapse border min-w-[900px]">
-    <thead>
+    <thead class="sticky top-0 bg-gray-200 z-10">
 
         <tr class="bg-gray-200">
 
-            <th class="border p-2 text-left">Student Name</th>
+            <th class="border p-2 text-center w-12">#</th>
+<th class="border p-2 text-left">Student Name</th>
 
             <th class="border p-2 text-left">Present</th>
 
@@ -526,12 +528,16 @@ class="w-full border p-2 rounded">
 
     <tbody>
 
-        @foreach($monthlyReport as $student)
+        @foreach($monthlyReport as $index => $student)
 
             <tr>
 
-                <td class="border p-2">
-                    {{ $student->name }}
+    <td class="border p-2 text-center w-12">
+    {{ $index + 1 }}
+</td>
+
+    <td class="border p-2">
+        {{ $student->name }}
                 </td>
 
                 <td class="border p-2">
