@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-
 use App\Http\Controllers\Student\StudentController;
 use App\Http\Controllers\Student\StudentAttendanceController;
 
+use App\Http\Controllers\Staff\StaffController;
+use App\Http\Controllers\Staff\AttendanceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -59,11 +59,16 @@ Route::middleware('auth')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+<<<<<<< HEAD
 | Student Management Routes
+=======
+| Staff Management Routes
+>>>>>>> staff-management-module
 |--------------------------------------------------------------------------
 */
 
 Route::get(
+<<<<<<< HEAD
     '/students',
     [StudentController::class, 'index']
 )->middleware('auth');
@@ -116,6 +121,60 @@ Route::post(
         'bulkStore'
     ]
 );
+=======
+    '/staff',
+    [StaffController::class, 'index']
+)->middleware('auth');
+
+Route::post(
+    '/staff',
+    [StaffController::class, 'store']
+)->middleware('auth');
+
+Route::get(
+    '/staff/{staff}/edit',
+    [StaffController::class, 'edit']
+)->middleware('auth');
+
+Route::put(
+    '/staff/{staff}',
+    [StaffController::class, 'update']
+)->middleware('auth');
+
+Route::delete(
+    '/staff/{staff}',
+    [StaffController::class, 'destroy']
+)->middleware('auth');
+
+
+
+ /*                                                                         
+| -------------------------------------------------------------------------- 
+| Staff Attendance Routes                                                    
+| -------------------------------------------------------------------------- 
+ */                                                                         
+
+Route::get(
+'/staff/attendance',
+[AttendanceController::class, 'index']
+)->middleware('auth');
+
+Route::post(
+'/staff/attendance',
+[AttendanceController::class, 'store']
+)->middleware('auth');
+
+Route::put(
+'/staff/attendance/{attendance}',
+[AttendanceController::class, 'update']
+)->middleware('auth');
+
+Route::delete(
+'/staff/attendance/{attendance}',
+[AttendanceController::class, 'destroy']
+)->middleware('auth');
+
+>>>>>>> staff-management-module
 
 /*
 |--------------------------------------------------------------------------
@@ -123,4 +182,8 @@ Route::post(
 |--------------------------------------------------------------------------
 */
 
+<<<<<<< HEAD
 require __DIR__.'/auth.php';
+=======
+require __DIR__.'/auth.php';
+>>>>>>> staff-management-module
