@@ -3,6 +3,9 @@
 use App\Http\Controllers\Notification\NotificationController;
 use App\Http\Controllers\ProfileController;
 
+use App\Http\Controllers\Student\StudentController;
+use App\Http\Controllers\Student\StudentAttendanceController;
+
 use App\Models\Notification;
 use App\Models\NotificationTemplate;
 
@@ -59,14 +62,11 @@ Route::middleware('auth')->group(function () {
     )->name('profile.destroy');
 });
 
+
 /*
 |--------------------------------------------------------------------------
 | Notification Dashboard Routes
 |--------------------------------------------------------------------------
-|
-| Protected using authentication middleware.
-| Only logged-in users can access notification features.
-|
 */
 
 Route::get('/notifications', function () {
@@ -76,66 +76,30 @@ Route::get('/notifications', function () {
 
     $notifications = Notification::query();
 
-    // Search by recipient or message
     if ($search) {
 
         $notifications->where(function ($query) use ($search) {
 
-            $query->where(
-                'recipient',
-                'like',
-                "%{$search}%"
-            )
-            ->orWhere(
-                'message',
-                'like',
-                "%{$search}%"
-            );
+            $query->where('recipient', 'like', "%{$search}%")
+                  ->orWhere('message', 'like', "%{$search}%");
 
         });
     }
 
-    // Filter notifications by type
     if ($type && $type !== 'ALL') {
 
-        $notifications->where(
-            'type',
-            $type
-        );
+        $notifications->where('type', $type);
     }
 
-    $notifications = $notifications
-        ->latest()
-        ->get();
+    $notifications = $notifications->latest()->get();
 
     $templates = NotificationTemplate::all();
 
-    $totalNotifications =
-        Notification::count();
-
-    $emailCount =
-        Notification::where(
-            'type',
-            'EMAIL'
-        )->count();
-
-    $smsCount =
-        Notification::where(
-            'type',
-            'SMS'
-        )->count();
-
-    $whatsappCount =
-        Notification::where(
-            'type',
-            'WHATSAPP'
-        )->count();
-
-    $failedCount =
-        Notification::where(
-            'status',
-            'FAILED'
-        )->count();
+    $totalNotifications = Notification::count();
+    $emailCount = Notification::where('type', 'EMAIL')->count();
+    $smsCount = Notification::where('type', 'SMS')->count();
+    $whatsappCount = Notification::where('type', 'WHATSAPP')->count();
+    $failedCount = Notification::where('status', 'FAILED')->count();
 
     return view(
         'notifications.index',
@@ -171,22 +135,41 @@ Route::delete(
 
 /*
 |--------------------------------------------------------------------------
-| TEMPORARY TESTING ROUTES
+| Student Attendance Routes
 |--------------------------------------------------------------------------
-|
-| These routes were used during development for:
-| - Gmail SMTP testing
-| - NotificationService verification
-| - End-to-end email workflow testing
-|
-| Keep for demonstration/testing purposes.
-| Remove or secure before production deployment.
-|
 */
+
+Route::get(
+    '/students/attendance',
+    [StudentAttendanceController::class, 'index']
+)->middleware('auth');
+
+Route::post(
+    '/students/attendance',
+    [StudentAttendanceController::class, 'store']
+)->middleware('auth');
+
+Route::delete(
+    '/students/attendance/{attendance}',
+    [StudentAttendanceController::class, 'destroy']
+)->middleware('auth');
+
+Route::put(
+    '/students/attendance/{attendance}',
+    [StudentAttendanceController::class, 'update']
+)->middleware('auth');
+
+Route::post(
+    '/students/attendance/bulk',
+    [
+        StudentAttendanceController::class,
+        'bulkStore'
+    ]
+);
 
 /*
 |--------------------------------------------------------------------------
-| SMTP Email Testing Route
+| TEMPORARY TESTING ROUTES
 |--------------------------------------------------------------------------
 */
 
@@ -205,12 +188,6 @@ Route::get('/test-email', function () {
     return 'Test email sent successfully.';
 });
 
-/*
-|--------------------------------------------------------------------------
-| NotificationService Testing Route
-|--------------------------------------------------------------------------
-*/
-
 Route::get('/send-test-notification', function () {
 
     app(
@@ -218,9 +195,7 @@ Route::get('/send-test-notification', function () {
     )->sendEmail([
 
         'recipient' => 'suryahero2004@gmail.com',
-
         'title' => 'ERP Service Test',
-
         'message' => 'NotificationService is working properly.'
 
     ]);
